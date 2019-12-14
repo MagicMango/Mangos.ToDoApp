@@ -1,0 +1,42 @@
+﻿@page "/fetchdata"
+
+@using Mangos.ToDoFront.Data
+@inject ToDoService ToDoService
+
+<h1>ToDo Lists</h1>
+
+@if (todoLists == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Last Updated</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var todolist in todoLists)
+            {
+                <tr>
+                    <td>@todolist.Name</td>
+                    <td>@todolist.LastUpdated.ToShortDateString()</td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ToDoList[] todoLists;
+
+    protected override async Task OnInitializedAsync()
+    {
+        todoLists = await ToDoService.GetAllFromEntity<ToDoList>();
+    }
+}
