@@ -1,5 +1,6 @@
 ﻿using Mangos.ToDo.Core.Repository;
 using Mangos.ToDo.Interfaces;
+using Mangos.ToDoApi.Queue;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -14,10 +15,12 @@ namespace Mangos.ToDoApi.Controllers
         where TEntity : class, IEntity<TKey>
         where TContext : DbContext
     {
-        TRepo repository;
-        public GenericController(TRepo repository)
+        ICrud<TEntity, TKey> repository;
+        IEntitiePublisher<IEntity<TKey>> publisher;
+        public GenericController(ICrud<TEntity, TKey> repository, IEntitiePublisher<IEntity<TKey>> publisher)
         {
             this.repository = repository;
+            this.publisher = publisher;
         }
         // GET api/values
         [HttpGet]
@@ -48,6 +51,7 @@ namespace Mangos.ToDoApi.Controllers
                 using (repository)
                 {
                     repository.Insert(value);
+                    publisher?.Emit(value, "Post." + value.GetType().Name);
                 }
             }
         }
@@ -59,16 +63,18 @@ namespace Mangos.ToDoApi.Controllers
             using (repository)
             {
                 repository.Update(id, value);
+                publisher?.Emit(value, "Update." + value.GetType().Name);
             }
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(TKey id)
+        public void Delete([FromBody] TEntity value)
         {
             using (repository)
             {
-                repository.Delete(id);
+                repository.Delete(value.Id);
+                publisher?.Emit(value, "Delete." + value.GetType().Name);
             }
         }
     }

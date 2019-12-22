@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Mangos.ToDo.Interfaces
 {
-    public interface ICrud<TEntity, TKey>
+    public interface ICrud<TEntity, TKey>: IDisposable
         where TEntity : class, IEntity<TKey>
     {
         ICollection<TEntity> Get();

@@ -22,11 +22,7 @@ namespace Mangos.ToDoFront
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddTransient(x => 
-            {
-                //var config = Configuration;
-                return new ToDoServiceConfiguration() { BaseUrl = "https://localhost:44300" };
-            });
+            services.AddTransient(x => new ToDoServiceConfiguration() { BaseUrl = x.GetService<IConfiguration>().GetValue<string>("ApiBaseUrl")  });
             services.AddTransient<ToDoService>();
         }
 

@@ -1,0 +1,65 @@
+﻿@page "/showtodoitems/{id:guid}"
+
+@using Mangos.ToDoFront.Data
+@inject ToDoService ToDoService
+@inject NavigationManager Navigation
+
+<h1>ToDo Items</h1>
+
+@if (todoList == null)
+{
+    <p><em>Loading ToDoItems...</em></p>
+}
+else
+{
+    if (todoList.ToDoItems.Count() > 0)
+    {
+        <div >
+            <p>Items from: <em>@todoList.Name</em></p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Last Updated</th>
+                        <th>ToDos</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var todoItem in todoList.ToDoItems)
+                    {
+                        <tr>
+                            <td>@todoItem.LastUpdated.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                            <td>@todoItem.Todo</td>
+                            <td><a class="btn btn-dark">Done</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div>
+
+        </div>
+    }
+    else
+    {
+        <p><em>No ToDoItems to show</em></p>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public Guid id { get; set; }
+
+    private ToDoList todoList;
+
+    public void NavigateToItem(Guid id)
+    {
+        Navigation.NavigateTo("showtodoitem/" + id.ToString());
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        todoList = await ToDoService.GetEntityById<ToDoList, Guid>(id);
+    }
+}

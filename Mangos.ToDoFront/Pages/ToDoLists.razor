@@ -1,0 +1,87 @@
+﻿@page "/todolists"
+
+@using Mangos.ToDoFront.Data
+@inject ToDoService ToDoService
+@inject NavigationManager Navigation
+<style>
+    .hide {
+        display: none;
+    }
+</style>
+<h1>ToDo Lists</h1>
+<button class="btn-success" @onclick="@(()=>ShowForm())">+ Add List</button>
+@if (todoLists == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="@ShowListClass">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Last Updated</th>
+                    <th>ToDos</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var todolist in todoLists)
+                {
+                    <tr>
+                        <td>@todolist.Name</td>
+                        <td>@todolist.LastUpdated.ToShortDateString()</td>
+                        <td>@todolist.ToDoItems.Count()</td>
+                        <td><a class="btn btn-dark" @onclick="@(()=>NavigateToItem(todolist.Id))">Details</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="@ShowFormClass">
+        <div class="form-group">
+            <label class="col-form-label">List name</label>
+            <input @bind-value="@toCreate.Name" class="form-control" type="text" required/>
+        </div>
+        <button class="btn btn-success" @onclick="@(()=>SaveList())">Save</button>
+    </div>
+}
+
+@code {
+    private ToDoList[] todoLists;
+    private ToDoList toCreate { get; set; } = new ToDoList();
+
+    public string ShowListClass { get; set; } = "";
+    public string ShowFormClass { get; set; } = "hide";
+
+    public void NavigateToItem(Guid id)
+    {
+        Navigation.NavigateTo("showtodoitems/" + id.ToString());
+    }
+
+    public void ShowForm()
+    {
+        ShowFormClass = "";
+        ShowListClass = "hide";
+        StateHasChanged();
+    }
+
+    public async Task SaveList()
+    {
+        toCreate.LastUpdated = DateTime.Now;
+        if(await ToDoService.Insert<ToDoList>(toCreate))
+        {
+            toCreate = new ToDoList();
+            ShowFormClass = "hide";
+            ShowListClass = "";
+            await OnInitializedAsync();
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        todoLists = await ToDoService.GetAllFromEntity<ToDoList>();
+    }
+}
