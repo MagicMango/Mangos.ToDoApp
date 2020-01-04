@@ -30,11 +30,16 @@ namespace Mangos.ToDo.Core.Repository
             }
         }
 
-        public virtual ICollection<TEntity> Get()
+        public virtual ICollection<TEntity> Get(string[] includes = null)
         {
             try
             {
-                return context.Set<TEntity>().Where(x=>!x.Deleted).ToList();
+                var entities = context.Set<TEntity>().AsQueryable();
+                foreach (var include in (includes ?? new string[0]))
+                {
+                    entities = entities.Include(include);
+                }
+                return entities.Where(x=>!x.Deleted).ToList();
             }
             catch
             {
@@ -43,11 +48,16 @@ namespace Mangos.ToDo.Core.Repository
             }
         }
 
-        public virtual TEntity Get(TKey id)
+        public virtual TEntity Get(TKey id, string[] includes = null)
         {
             try
             {
-                return context.Set<TEntity>().Find(id);
+                var entities = context.Set<TEntity>().AsQueryable();
+                foreach (var include in (includes ?? new string[0]))
+                {
+                    entities = entities.Include(include);
+                }
+                return entities.SingleOrDefault(x=>x.Id.Equals(id));
             }
             catch
             {
@@ -89,6 +99,24 @@ namespace Mangos.ToDo.Core.Repository
         public void Dispose()
         {
             context?.Dispose();
+        }
+
+        public bool Save()
+        {
+            try
+            {
+                return context.SaveChanges() > 0;
+            }
+            catch
+            {
+                //ToDo logging!
+                return false;
+            }
+        }
+
+        public ICollection<TEntity> Where(Func<TEntity, bool> where)
+        {
+            return context.Set<TEntity>().Where(where).ToList();
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Mangos.ToDoApi
             services.AddTransient(x => x.GetService<IConfiguration>().GetValue<RabbitMQConfig>("RabbitMQ"));
             services.AddSingleton<IEntitiePublisher<IEntity<Guid>>, EntitiePublisher<IEntity<Guid>>>();
             services.AddTransient<ICrud<ToDoItem, Guid>, GenericDatabaseRepository<ToDoItem, Guid, ToDoContext>>();
-            services.AddTransient<ICrud<ToDoList, Guid>, ToDoMockup>();
+            services.AddTransient<ICrud<ToDoList, Guid>, GenericDatabaseRepository<ToDoList, Guid, ToDoContext>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

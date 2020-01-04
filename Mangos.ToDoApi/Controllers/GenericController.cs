@@ -15,8 +15,8 @@ namespace Mangos.ToDoApi.Controllers
         where TEntity : class, IEntity<TKey>
         where TContext : DbContext
     {
-        ICrud<TEntity, TKey> repository;
-        IEntitiePublisher<IEntity<TKey>> publisher;
+        protected ICrud<TEntity, TKey> repository;
+        protected IEntitiePublisher<IEntity<TKey>> publisher;
         public GenericController(ICrud<TEntity, TKey> repository, IEntitiePublisher<IEntity<TKey>> publisher)
         {
             this.repository = repository;
@@ -28,17 +28,17 @@ namespace Mangos.ToDoApi.Controllers
         {
             using (repository)
             {
-                return repository.Get().ToList();
+                return repository.Get(null).ToList();
             }
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<TEntity> Get(TKey id)
+        public virtual ActionResult<TEntity> Get(TKey id)
         {
             using (repository)
             {
-                return repository.Get(id);
+                return repository.Get(id, null);
             }
         }
 

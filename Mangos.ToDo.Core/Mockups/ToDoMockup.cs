@@ -33,12 +33,12 @@ namespace Mangos.ToDo.Core.Mockups
             
         }
 
-        public ICollection<ToDoList> Get()
+        public ICollection<ToDoList> Get(string[] includes = null)
         {
             return database.ToList();
         }
 
-        public ToDoList Get(Guid id)
+        public ToDoList Get(Guid id, string[] includes = null)
         {
             return database.SingleOrDefault(x => x.Id == id);
         }
@@ -49,9 +49,19 @@ namespace Mangos.ToDo.Core.Mockups
             return true;
         }
 
+        public bool Save()
+        {
+            return true;
+        }
+
         public bool Update(Guid id, ToDoList entity)
         {
             return true;
+        }
+
+        public ICollection<ToDoList> Where(Func<ToDoList, bool> where)
+        {
+            return database.Where(where).ToList();
         }
     }
 }

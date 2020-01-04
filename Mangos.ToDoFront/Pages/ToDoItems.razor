@@ -21,17 +21,19 @@ else
                     <tr>
                         <th>Last Updated</th>
                         <th>ToDos</th>
+                        <th>Done</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var todoItem in todoList.ToDoItems)
                     {
-                        <tr>
-                            <td>@todoItem.LastUpdated.ToString("dd.MM.yyyy HH:mm:ss")</td>
-                            <td>@todoItem.Todo</td>
-                            <td><a class="btn btn-dark">Done</a></td>
-                        </tr>
+                    <tr>
+                        <td>@todoItem.LastUpdated.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                        <td>@todoItem.Todo</td>
+                        <td>@todoItem.Done</td>
+                        <td><a class="btn btn-dark" @onclick="(()=>MarkAsDone(todoItem.Id))">Done</a></td>
+                    </tr>
                     }
                 </tbody>
             </table>
@@ -56,6 +58,18 @@ else
     public void NavigateToItem(Guid id)
     {
         Navigation.NavigateTo("showtodoitem/" + id.ToString());
+    }
+
+    public async Task MarkAsDone(Guid id)
+    {
+        if(await ToDoService.MarkAsDone<ToDoItem>(id)){
+            await OnInitializedAsync();
+            StateHasChanged();
+        }
+        else
+        {
+
+        }
     }
 
     protected override async Task OnInitializedAsync()

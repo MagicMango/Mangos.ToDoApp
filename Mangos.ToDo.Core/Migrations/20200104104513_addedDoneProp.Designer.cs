@@ -3,14 +3,16 @@ using System;
 using Mangos.ToDo.Core.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Mangos.ToDo.Core.Migrations
 {
     [DbContext(typeof(ToDoContext))]
-    partial class ToDoContextModelSnapshot : ModelSnapshot
+    [Migration("20200104104513_addedDoneProp")]
+    partial class addedDoneProp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,11 +25,9 @@ namespace Mangos.ToDo.Core.Migrations
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)))
                         .HasColumnType("char(36)");
 
-                    b.Property<byte>("Deleted")
-                        .HasColumnType("TINYINT(4)");
+                    b.Property<bool>("Deleted");
 
-                    b.Property<byte>("Done")
-                        .HasColumnType("TINYINT(4)");
+                    b.Property<bool>("Done");
 
                     b.Property<DateTime>("LastUpdated");
 

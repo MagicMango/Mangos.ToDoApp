@@ -39,6 +39,20 @@ namespace Mangos.ToDoFront.Data
                 return false;
             }
         }
+
+        public async Task<bool> MarkAsDone<TEntity>(Guid id)
+        {
+            try
+            {
+                await client.PostJsonAsync(string.Format("{0}/api/{1}/{2}", config.BaseUrl, typeof(TEntity).Name, "MarkAsDone"), id);
+                return true;
+            }
+            catch
+            {
+                //Todo Logging!!!!!
+                return false;
+            }
+        }
         public async Task<bool> Update<TEntity>(TEntity entity)
         {
             try
